@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node src/bin/www"
+    "start": "node src/bin/www",
+    "release": "standard-version -a",
+    "release:pre": "standard-version -a --pre-release"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
     "newrelic": "^4.12.0",
     "node-mw-api-prodest": "^1.7.0",
     "request-promise": "^4.2.2",
+    "standard-version": "^4.4.0",
     "uuid": "^2.0.2",
     "xml2js": "^0.4.17"
   },
