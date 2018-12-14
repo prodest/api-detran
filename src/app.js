@@ -12,6 +12,7 @@ let app = express();
 app.use(bodyParser.json());
 
 require('./routes/home')(app);
+require('./routes/push')(app);
 
 app.use(
   apiMiddleware({
