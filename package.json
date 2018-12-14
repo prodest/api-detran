@@ -16,14 +16,15 @@
   },
   "homepage": "https://github.com/prodest/api-detran#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "compression": "^1.6.2",
     "cors": "^2.7.1",
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "mssql": "^3.3.0",
-    "newrelic": "^1.28.1",
-    "node-mw-api-prodest": "^1.2.4",
-    "request-promise": "^3.0.0",
+    "newrelic": "^4.12.0",
+    "node-mw-api-prodest": "^1.7.0",
+    "request-promise": "^4.2.2",
     "uuid": "^2.0.2",
     "xml2js": "^0.4.17"
   },

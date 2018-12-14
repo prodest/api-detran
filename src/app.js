@@ -1,59 +1,72 @@
-const configMiddleware = require( './config/apiMiddleware' );
-const config = require( './config/app' );
-if ( config.env === 'production' ) {
-    require( 'newrelic' );
+const configMiddleware = require('./config/apiMiddleware');
+const bodyParser = require('body-parser');
+const config = require('./config/app');
+if (config.env === 'production') {
+  require('newrelic');
 }
-const apiMiddleware = require( 'node-mw-api-prodest' ).middleware;
-const express = require( 'express' );
+const apiMiddleware = require('node-mw-api-prodest').middleware;
+const express = require('express');
 
 let app = express();
 
-app.use( apiMiddleware( {
+app.use(bodyParser.json());
+
+require('./routes/home')(app);
+
+app.use(
+  apiMiddleware({
     compress: true,
     cors: true,
     log: true,
     authentication: {
-        jwtPublicKey: config.jwtPublicKey
+      jwtPublicKey: config.jwtPublicKey
     }
-} ) );
+  })
+);
 
 // load our routes
-require( './routes/driverAcessoCidadao' )( app );
+require('./routes/driverAcessoCidadao')(app);
 
-app.use( apiMiddleware( {
+app.use(
+  apiMiddleware({
     limit: {
-        max: parseInt( configMiddleware.max ),
-        duration: parseInt( configMiddleware.time ) * 60 * 1000,
-        perSecond: parseInt( configMiddleware.maxSecond ),
-        redisUrl: config.redisUrl,
-        apiId: 'api-detran'
+      max: parseInt(configMiddleware.max),
+      duration: parseInt(configMiddleware.time) * 60 * 1000,
+      perSecond: parseInt(configMiddleware.maxSecond),
+      redisUrl: config.redisUrl,
+      apiId: 'api-detran'
     }
-} ) );
+  })
+);
 
-app.use( apiMiddleware( {
+app.use(
+  apiMiddleware({
     limit: {
-        max: parseInt( configMiddleware.max2 ),
-        duration: parseInt( configMiddleware.duration2Sec ) * 1000,
-        perSecond: parseInt( configMiddleware.perSecond2 ),
-        redisUrl: config.redisUrl,
-        apiId: 'api-detran-2'
+      max: parseInt(configMiddleware.max2),
+      duration: parseInt(configMiddleware.duration2Sec) * 1000,
+      perSecond: parseInt(configMiddleware.perSecond2),
+      redisUrl: config.redisUrl,
+      apiId: 'api-detran-2'
     }
-} ) );
+  })
+);
 
 // load limited routes
-require( './routes/driver' )( app );
-require( './routes/vehicle' )( app );
+require('./routes/driver')(app);
+require('./routes/vehicle')(app);
 
-app.use( apiMiddleware( {
+app.use(
+  apiMiddleware({
     error: {
-        notFound: true,
-        debug: config.env === 'development'
+      notFound: true,
+      debug: config.env === 'development'
     }
-} ) );
+  })
+);
 
 let pathApp = express();
 
 let path = config.path;
-pathApp.use( path, app );
+pathApp.use(path, app);
 
 module.exports = pathApp;
