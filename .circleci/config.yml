@@ -1,0 +1,101 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/api-detran
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "package-lock.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
+      - run: npm install
+      - run: npm i upgrade-rancher
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-dependencies-{{ checksum "package-lock.json" }}
+      - persist_to_workspace:
+          root: ~/api-detran
+          paths:
+            - ./
+  build-docker:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/api-detran
+    steps:
+      - attach_workspace:
+          at: ./
+      - setup_remote_docker
+      - run:
+          name: Docker build and push
+          command: |
+              docker build -t prodest/api-detran:$CIRCLE_TAG .
+              docker login -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD
+              docker push prodest/api-detran:$CIRCLE_TAG
+  publish:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/api-detran
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          node node_modules/upgrade-rancher/client.js 
+          --IMAGE=prodest/api-detran:$CIRCLE_TAG
+          --ENVIRONMENT=api 
+          --STACK=api-developers 
+          --SERVICE=api-detran 
+          --START_FIRST=true
+  publish-prod:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/node-pushserver
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          node node_modules/upgrade-rancher/client.js 
+          --IMAGE=prodest/api-detran:$CIRCLE_TAG 
+          --ENVIRONMENT=api 
+          --STACK=api 
+          --SERVICE=api-detran 
+          --START_FIRST=true
+workflows:
+  version: 2
+  build-with-context:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - build-docker:
+          context: Prodest
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - publish:
+          context: Prodest
+          requires:
+            - build-docker
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+){2}-[0-9]+/ # v1.2.3-9
+      - publish-prod:
+          context: Prodest
+          requires:
+            - build-docker
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+){2}/ # v1.2.3
