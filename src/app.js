@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const configMiddleware = require('./config/apiMiddleware');
 const bodyParser = require('body-parser');
 const config = require('./config/app');

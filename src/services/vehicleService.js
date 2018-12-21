@@ -1,5 +1,7 @@
+const rp = require( 'request-promise' );
 const sql = require( 'mssql' );
 const detran = require( '../config/detran' );
+const espm = require( '../config/espm' );
 
 const SP_DADOS_VEICULO = detran.detranNet.SPDadosVeiculo;
 const SP_INFRACOES = detran.detranNet.SPInfracoes;
@@ -43,6 +45,17 @@ module.exports = () => {
                 connection.close();
                 return Promise.reject( err );
             } );
+    };
+
+    vehicleService.getUsersByVehiclePlate = ( plate ) => {
+        const options = {
+            uri: espm.vehicle_data_service_url.replace( ':plate', plate ),
+            headers: {
+                'Authorization': espm.espmApiAuthToken
+            },
+            json: true
+        };
+        return rp( options );
     };
 
     return vehicleService;

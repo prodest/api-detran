@@ -13,5 +13,5 @@ const verifyBasicAuthentication = ( req, res, next ) => {
 module.exports = app => {
   const vehicleController = require('../controllers/vehicleController')();
 
-  app.post('/vehicle/tickets', verifyBasicAuthentication, vehicleController.createTicket);
+  app.post('/vehicle/tickets', verifyBasicAuthentication, vehicleController.sendPushTicket);
 };

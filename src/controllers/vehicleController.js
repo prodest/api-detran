@@ -1,4 +1,5 @@
 const vehicleService = require('../services/vehicleService');
+const pushService = require('../services/pushService');
 
 function vehicleNotFound(next) {
   const error = new Error('Veículo não encontrado.');
@@ -67,12 +68,34 @@ module.exports = () => {
       });
   };
 
-  vehicleController.createTicket = (req, res, next) => {
+  vehicleController.sendPushTicket = (req, res, next) => {
     const plate = req.body.plate;
-    const renavam = req.body.renavam;
+    // const renavam = req.body.renavam;
     const message = req.body.message;
 
-    return res.json({ status: 'não implementado' });
+    const defaultMessage = `Nova multa registrada para o veículo ${plate.toUpperCase()}`;
+
+    vehicleService()
+      .getUsersByVehiclePlate(plate)
+      .then(usersToPush => {
+        const pushData = {
+          users: usersToPush,
+          title: 'Detran',
+          message: message ? message : defaultMessage,
+          state: 'app.detranVehicles/:plate',
+          stateParams: {
+            plate: `${plate}`
+          },
+          icon: 'notification'
+        };
+
+        return pushService().sendPush(pushData);
+      })
+      .then(() => {
+        console.log(`Notificação de multa para a placa ${plate} enviada com sucesso ao push server.\n`);
+        return res.send('ok');
+      })
+      .catch(err => next(err));
   };
 
   return vehicleController;
