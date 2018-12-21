@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/bin/www",
     "release": "standard-version -a",
-    "release:pre": "standard-version -a --pre-release"
+    "release:pre": "standard-version -a --prerelease"
   },
   "repository": {
     "type": "git",
