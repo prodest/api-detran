@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:6.2.1
+FROM node:10-slim
 
 # add project to build
 COPY src /root/api/src

@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:10
     working_directory: ~/api-detran
     steps:
       - checkout
@@ -24,7 +24,7 @@ jobs:
             - ./
   build-docker:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:10
     working_directory: ~/api-detran
     steps:
       - attach_workspace:
@@ -38,7 +38,7 @@ jobs:
               docker push prodest/api-detran:$CIRCLE_TAG
   publish:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:10
     working_directory: ~/api-detran
     steps:
       - attach_workspace:
@@ -52,7 +52,7 @@ jobs:
           --START_FIRST=true
   publish-prod:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:10
     working_directory: ~/node-pushserver
     steps:
       - attach_workspace:
