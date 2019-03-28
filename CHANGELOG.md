@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/prodest/api-detran/compare/v1.2.0...v1.3.0) (2019-03-28)
+
+
+### Features
+
+* **api:** update to node 10 ([948d903](https://github.com/prodest/api-detran/commit/948d903))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/prodest/api-detran/compare/v1.2.0-0...v1.2.0) (2018-12-21)
 
